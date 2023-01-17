@@ -1,0 +1,37 @@
+{
+  "uid": {
+    "__TYPE__": "UIDContent",
+    "value": "mission"
+  },
+  "date": {
+    "__TYPE__": "FieldContent",
+    "type": "Timestamp",
+    "value": "2019-04-23T00:00:47Z"
+  },
+  "title": {
+    "__TYPE__": "StructuredTextContent",
+    "value": [
+      {
+        "type": "paragraph",
+        "content": {
+          "text": "Consequat sunt aute reprehenderit ex duis magna culpa adipisicing deserunt sunt fugiat duis esse aliqua excepteur. Occaecat proident eiusmod sunt commodo irure."
+        }
+      }
+    ]
+  },
+  "content": {
+    "__TYPE__": "StructuredTextContent",
+    "value": [
+      {
+        "type": "paragraph",
+        "content": {
+          "text": "Laboris pariatur sint culpa velit officia aliqua."
+        }
+      }
+    ]
+  },
+  "slices": {
+    "__TYPE__": "SliceContentType",
+    "value": []
+  }
+}
