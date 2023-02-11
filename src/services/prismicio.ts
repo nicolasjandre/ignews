@@ -6,7 +6,7 @@ export function createClient({
   req,
   ...config
 }: prismicNext.CreateClientConfig = {}) {
-  const client = prismic.createClient('jandre-ignews', {
+  const client = prismic.createClient(process.env.PRISMIC_REPO_NAME as  string, {
     accessToken: process.env.PRISMIC_ACCESS_TOKEN
   })
 

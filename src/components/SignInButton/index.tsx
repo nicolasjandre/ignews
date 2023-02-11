@@ -5,9 +5,9 @@ import { FiX } from 'react-icons/fi'
 import styles from './styles.module.scss'
 
 export function SignInButton() {
-  const { data: session } = useSession()
+  const { data } = useSession()
 
-  return session ? (
+  return data ? (
     <button 
     className={styles.authenticated + " " + styles.signInButton} 
     type="button"
@@ -15,7 +15,7 @@ export function SignInButton() {
       <FaGithub 
       color="#04d361" 
       />
-      <span>{session.user?.name}</span>
+      <span>{data.session.user.name}</span>
       <FiX 
       color="#737380"
       className={styles.closeIcon}
