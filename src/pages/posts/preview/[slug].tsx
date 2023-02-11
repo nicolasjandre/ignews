@@ -26,7 +26,7 @@ export default function PostPreview({ post }: PostPreviewProps) {
     if (session?.activeSubscription) {
       router.push(`/posts/${post.slug}`)
     }
-  }, [session, post.slug])
+  }, [session, post.slug, router])
   return (
     <>
       <Head>
@@ -43,12 +43,14 @@ export default function PostPreview({ post }: PostPreviewProps) {
           />
 
           <div className={styles.divButton}>
-            <button type="button" className={styles.continueReading}>
-              Wanna continue reading?
-              <Link href="/">
-                Subscribe Now 🤗
-              </Link>
-            </button>
+            <Link href="/">
+              <button type="button" className={styles.continueReading}>
+                <span>Wanna continue reading?</span>
+                
+                <strong>Subscribe Now 🤗</strong>
+                
+              </button>
+            </Link>
           </div>
         </article>
       </main>
@@ -73,7 +75,7 @@ export const getStaticProps: GetStaticProps = async ({ params }: any) => {
   const post = {
     slug,
     title: prismicH.asText(response.data.title),
-    content: prismicH.asHTML(response.data.content.splice(0, 6)),
+    content: prismicH.asHTML(response.data.content.splice(0, 6) as []),
     updatedAt: new Date(response.last_publication_date).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: 'long',

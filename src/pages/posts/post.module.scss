@@ -69,17 +69,17 @@
       font-weight: bold;
       color: var(--white);
       border: none;
-      width: 90%;
+      width: 100%;
       transition: transform .4s;
+      
+      strong {
+        color: var(--yellow-500);
+        margin-left: 0.5rem;
+      }
   
       &:hover {
         transform: scale(1.04);
         border-radius: 150px;
-      }
-  
-      a {
-        color: var(--yellow-500);
-        margin-left: 0.5rem;
       }
     }
   }
