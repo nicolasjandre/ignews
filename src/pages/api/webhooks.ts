@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { saveSubscription, updateSubscription } from './_lib/manageSubscription';
 import { stripe } from '../../services/stripe';
+import { buffer } from 'micro/types/src/lib';
 
 const handler = async (
   req: NextApiRequest,
@@ -11,7 +12,7 @@ const handler = async (
   const webhookSecret: string = `${process.env.STRIPE_WEBHOOK_SECRET}` as string;
 
   if (req.method === 'POST') {
-    const sig = req.headers['stripe-signature'];
+    const sig = req.headers['stripe-signature'] as string;
 
     const relevantEvents = new Set([
       "checkout.session.completed",
@@ -23,7 +24,7 @@ const handler = async (
 
     try {
       const body = await buffer(req);
-      event = stripe.webhooks.constructEvent(body, sig!, webhookSecret);
+      event = stripe.webhooks.constructEvent(body.toString(), sig, webhookSecret);
     } catch (err: any) {
       console.log(`❌ Error message: ${err.message}`);
       res.status(400).send(`Webhook Error: ${err.message}`);
@@ -77,22 +78,6 @@ export const config = {
   api: {
     bodyParser: false,
   },
-};
-
-const buffer = (req: NextApiRequest) => {
-  return new Promise<Buffer>((resolve, reject) => {
-    const chunks: Buffer[] = [];
-
-    req.on('data', (chunk: Buffer) => {
-      chunks.push(chunk);
-    });
-
-    req.on('end', () => {
-      resolve(Buffer.concat(chunks));
-    });
-
-    req.on('error', reject);
-  });
 };
 
 export default handler;
