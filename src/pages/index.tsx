@@ -21,7 +21,7 @@ export default function Home({ product }: HomeProps) {
         <title>Home | ig.news</title>
         <meta
           http-equiv="Content-Security-Policy"
-          content="script-src 'self' https://js.stripe.com; style-src 'self' https://js.stripe.com; img-src 'self' https://q.stripe.com;"
+          content="script-src 'self' https://*.stripe.com; style-src 'self' https://*.stripe.com; img-src 'self' https://*.stripe.com;"
         />
       </Head>
       
