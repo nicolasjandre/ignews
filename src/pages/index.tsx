@@ -19,6 +19,10 @@ export default function Home({ product }: HomeProps) {
     <>
       <Head>
         <title>Home | ig.news</title>
+        <meta
+          http-equiv="Content-Security-Policy"
+          content="script-src 'self' https://js.stripe.com; style-src 'self' https://js.stripe.com; img-src 'self' https://q.stripe.com;"
+        />
       </Head>
       
       <main className={styles.contentContainer}>
