@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { saveSubscription, updateSubscription } from './_lib/manageSubscription';
 import { stripe } from '../../services/stripe';
-import { buffer } from 'micro/types/src/lib';
+import getRawBody from 'raw-body';
 
 const handler = async (
   req: NextApiRequest,
@@ -23,8 +23,8 @@ const handler = async (
     let event: Stripe.Event;
 
     try {
-      const body = await buffer(req);
-      event = stripe.webhooks.constructEvent(body.toString(), sig, webhookSecret);
+      const rawBody = await getRawBody(req);
+      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
     } catch (err: any) {
       console.log(`❌ Error message: ${err.message}`);
       res.status(400).send(`Webhook Error: ${err.message}`);
