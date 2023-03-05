@@ -1,16 +1,14 @@
 import Stripe from 'stripe';
-import {NextApiRequest, NextApiResponse} from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { saveSubscription, updateSubscription } from './_lib/manageSubscription';
+import { stripe } from '../../services/stripe';
 
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const stripe = new Stripe(process.env.STRIPE_WEBHOOK_SECRET as string, {
-    apiVersion: '2022-11-15',
-  });
 
-  const webhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET as string;
+  const webhookSecret: string = `${process.env.STRIPE_WEBHOOK_SECRET}` as string;
 
   if (req.method === 'POST') {
     const sig = req.headers['stripe-signature'];
@@ -27,19 +25,16 @@ const handler = async (
       const body = await buffer(req);
       event = stripe.webhooks.constructEvent(body, sig!, webhookSecret);
     } catch (err: any) {
-      // On error, log and return the error message
       console.log(`❌ Error message: ${err.message}`);
       res.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
 
-    // Successfully constructed event
     console.log('✅ Success:', event.id);
 
-    // Cast event data to Stripe object
     const { type } = event
 
-    if (relevantEvents.has( type )) {
+    if (relevantEvents.has(type)) {
       try {
         switch (type) {
           case "customer.subscription.updated":
@@ -54,7 +49,7 @@ const handler = async (
             break;
           case "checkout.session.completed":
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
-          
+
             await saveSubscription(
               checkoutSession?.subscription!.toString(),
               checkoutSession?.customer!.toString()
@@ -64,14 +59,14 @@ const handler = async (
           default:
             throw new Error(`Unknown event type: ${type}`)
         }
-        
+
       } catch (error: any) {
-        return res.json({ error: 'Webhook handler failed.'})
+        return res.json({ error: 'Webhook handler failed.' })
+      }
     }
-  }
 
     // Return a response to acknowledge receipt of the event
-    res.json({received: true});
+    res.json({ received: true });
   } else {
     res.setHeader('Allow', 'POST');
     res.status(405).end('Method Not Allowed');
