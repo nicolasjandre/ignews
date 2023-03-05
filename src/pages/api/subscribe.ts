@@ -60,8 +60,8 @@ export default async function subscribe(req: NextApiRequest, res: NextApiRespons
         ],
         mode: "subscription",
         allow_promotion_codes: true,
-        success_url: `${String(process.env.STRIPE_SUCESS_URL)}`,
-        cancel_url: `${String(process.env.STRIPE_CANCEL_URL)}`,
+        success_url: "https://jandre-ignews.vercel.app/posts",
+        cancel_url: "https://jandre-ignews.vercel.app/",
       })
 
       return res.status(200).json({ sessionId: stripeCheckoutSession.id })
