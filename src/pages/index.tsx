@@ -19,10 +19,6 @@ export default function Home({ product }: HomeProps) {
     <>
       <Head>
         <title>Home | ig.news</title>
-        <meta
-          http-equiv="Content-Security-Policy"
-          content="script-src 'self' 'unsafe-inline' https://*.stripe.com; style-src 'self' 'unsafe-inline' https://*.stripe.com; img-src 'self' https://*.stripe.com; frame-src 'self' https://*.stripe.com"
-        />
       </Head>
       
       <main className={styles.contentContainer}>
