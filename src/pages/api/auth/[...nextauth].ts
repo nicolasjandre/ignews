@@ -24,45 +24,53 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session }: { session: Session; user: User }): Promise<Session & { activeSubscription: object | null}> {
+    async session({ session }: { session: Session; user: User }): Promise<Session & { activeSubscription: object | null }> {
       try {
-        const email = session.user?.email;
-        
+        const email = session.user?.email as string;
+
         if (!email) {
           throw new Error('No email found in session');
         }
+
+        // Get the user's reference
+        const userRef = q.Select(
+          "ref",
+          q.Get(
+            q.Match(
+              q.Index('user_by_email'),
+              q.Casefold(email)
+            )
+          )
+        );
 
         const userActiveSubscription = await fauna.query(
           q.Get(
             q.Intersection([
               q.Match(
                 q.Index("subscription_by_user_ref"),
-                q.Select(
-                  "ref",
-                  q.Get(
-                    q.Match(
-                      q.Index("user_by_email"),
-                      q.Casefold(session.user?.email as string)
-                    )
-                  )
-                )
+                userRef
               ),
-              q.Match(q.Index("subscription_by_status"), "active"),
+              q.Match(
+                q.Index('subscription_by_status'),
+                "active"
+              )
             ])
           )
-        );
+        )
 
         return {
           ...session,
           activeSubscription: userActiveSubscription,
         };
       } catch (e) {
+        console.log(e)
         return {
           ...session,
           activeSubscription: null,
         };
       }
     },
+
 
     async signIn({ user }) {
       const { email } = user;
