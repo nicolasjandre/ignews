@@ -30,8 +30,6 @@ export default async function subscribe(req: NextApiRequest, res: NextApiRespons
 
       let customerId = user.data.stripe_customer_id
 
-      console.log("second log" + customerId)
-
       if (!customerId) {
         const stripeCustomer = await stripe.customers.create({
           email: session?.user?.email as string,
@@ -50,8 +48,6 @@ export default async function subscribe(req: NextApiRequest, res: NextApiRespons
         customerId = stripeCustomer.id
       }
 
-      console.log("third log" + customerId)
-
       const stripeCheckoutSession = await stripe.checkout.sessions.create({
         customer: customerId,
         payment_method_types: ["card"],
@@ -64,8 +60,8 @@ export default async function subscribe(req: NextApiRequest, res: NextApiRespons
         ],
         mode: "subscription",
         allow_promotion_codes: true,
-        success_url: process.env.STRIPE_SUCESS_URL as string,
-        cancel_url: process.env.STRIPE_CANCEL_URL,
+        success_url: String(process.env.STRIPE_SUCESS_URL),
+        cancel_url: String(process.env.STRIPE_CANCEL_URL),
       })
 
       return res.status(200).json({ sessionId: stripeCheckoutSession.id })
