@@ -33,12 +33,10 @@ export default async function webhooks(req: NextApiRequest, res: NextApiResponse
     const buf = await buffer(req);
     const secret = req.headers["stripe-signature"];
 
-    console.log(webhookSecret)
-
     let event: Stripe.Event;
     
     try {
-      event = stripe.webhooks.constructEvent(buf, secret as string, webhookSecret)
+      event = stripe.webhooks.constructEvent(buf, secret as string, "we_1MiHRHFmhexNBgj4fvXbN4Ax")
     } catch (error: any) {
       return res.status(400).send(`Webhook error: ${error.message}`)
     }
