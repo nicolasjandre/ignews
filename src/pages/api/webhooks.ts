@@ -26,15 +26,19 @@ const relevantEvents = new Set([
   "customer.subscription.deleted"
 ]);
 
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET as string
+
 export default async function webhooks(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     const buf = await buffer(req);
     const secret = req.headers["stripe-signature"];
 
+    console.log(webhookSecret)
+
     let event: Stripe.Event;
     
     try {
-      event = stripe.webhooks.constructEvent(buf, secret as string, process.env.STRIPE_WEBHOOK_SECRET as string)
+      event = stripe.webhooks.constructEvent(buf, secret as string, webhookSecret)
     } catch (error: any) {
       return res.status(400).send(`Webhook error: ${error.message}`)
     }
