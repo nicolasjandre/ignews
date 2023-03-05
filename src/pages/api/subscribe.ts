@@ -15,59 +15,55 @@ interface User {
 
 export default async function subscribe(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    try {
-      const session = await getSession({ req });
-      console.log("first log" + session)
+    const session = await getSession({ req });
+    console.log("first log" + session)
 
-      const user = await fauna.query<User>(
-        q.Get(
-          q.Match(
-            q.Index('user_by_email'),
-            q.Casefold(session?.user?.email as string)
-          )
+    const user = await fauna.query<User>(
+      q.Get(
+        q.Match(
+          q.Index('user_by_email'),
+          q.Casefold(session?.user?.email as string)
         )
       )
+    )
 
-      let customerId = user.data.stripe_customer_id
+    let customerId = user.data.stripe_customer_id
 
-      if (!customerId) {
-        const stripeCustomer = await stripe.customers.create({
-          email: session?.user?.email as string,
-        })
-
-        await fauna.query(
-          q.Update(
-            q.Ref(q.Collection("users"), user.ref.id),
-            {
-              data: {
-                stripe_customer_id: stripeCustomer.id,
-              }
-            }
-          )
-        )
-        customerId = stripeCustomer.id
-      }
-
-      const stripeCheckoutSession = await stripe.checkout.sessions.create({
-        customer: customerId,
-        payment_method_types: ["card"],
-        billing_address_collection: "required",
-        line_items: [
-          {
-            price: "price_1MOqCMFmhexNBgj4anCH8Mh1",
-            quantity: 1
-          }
-        ],
-        mode: "subscription",
-        allow_promotion_codes: true,
-        success_url: "https://jandre-ignews.vercel.app/posts",
-        cancel_url: "https://jandre-ignews.vercel.app/",
+    if (!customerId) {
+      const stripeCustomer = await stripe.customers.create({
+        email: session?.user?.email as string,
       })
 
-      return res.status(200).json({ sessionId: stripeCheckoutSession.id })
-    } catch (err) {
-      console.log(err);
+      await fauna.query(
+        q.Update(
+          q.Ref(q.Collection("users"), user.ref.id),
+          {
+            data: {
+              stripe_customer_id: stripeCustomer.id,
+            }
+          }
+        )
+      )
+      customerId = stripeCustomer.id
     }
+
+    const stripeCheckoutSession = await stripe.checkout.sessions.create({
+      customer: customerId,
+      payment_method_types: ["card"],
+      billing_address_collection: "required",
+      line_items: [
+        {
+          price: "price_1MOqCMFmhexNBgj4anCH8Mh1",
+          quantity: 1
+        }
+      ],
+      mode: "subscription",
+      allow_promotion_codes: true,
+      success_url: "https://jandre-ignews.vercel.app/posts",
+      cancel_url: "https://jandre-ignews.vercel.app/",
+    })
+
+    return res.status(200).json({ sessionId: stripeCheckoutSession.id })
   } else {
     res.setHeader("Allow", "POST")
     res.status(405).end({ message: "Method Not Allowed" })
